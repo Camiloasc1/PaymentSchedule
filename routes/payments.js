@@ -18,4 +18,26 @@ router.post('/', function (req, res, next) {
     })
 });
 
+router.get('/:id', function (req, res, next) {
+    Payment.findById(req.params.id, function (err, pay) {
+        if (err) return next(err);
+        res.json(pay);
+    });
+});
+
+router.put('/:id', function (req, res, next) {
+    Payment.findByIdAndUpdate(req.params.id, req.body, function (err, pay) {
+        if (err) return next(err);
+        res.json(pay);
+    });
+});
+
+router.delete('/:id', function (req, res, next) {
+    Payment.findByIdAndRemove(req.params.id, req.body, function (err, pay) {
+        if (err) return next(err);
+        res.json(pay);
+    });
+});
+
+
 module.exports = router;
