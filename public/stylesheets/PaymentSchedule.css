@@ -1,0 +1,9 @@
+md-list-item > button {
+    width: 100%;
+    text-align: left !important;
+}
+
+md-list-item > a {
+    width: 100%;
+    text-align: left !important;
+}
