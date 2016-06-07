@@ -33,6 +33,17 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/payments', payments);
 
+// SPA return the index for all html requests
+// Only required when $locationProvider.html5Mode(true);
+/*
+app.use(function (req, res, next) {
+    if (req.accepts('html'))
+        res.sendFile(__dirname + '/public/index.html');
+    else
+        next();
+});
+*/
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     var err = new Error('Not Found');
