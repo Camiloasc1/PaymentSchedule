@@ -9,8 +9,7 @@ var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/paymentschedule', function (err) {
     if (err) {
         console.log('MongoDB connection error', err);
-    }
-    else {
+    } else {
         console.log('MongoDB connection successful');
     }
 });
@@ -36,13 +35,13 @@ app.use('/payments', payments);
 // SPA return the index for all html requests
 // Only required when $locationProvider.html5Mode(true);
 /*
-app.use(function (req, res, next) {
-    if (req.accepts('html'))
-        res.sendFile(__dirname + '/public/index.html');
-    else
-        next();
-});
-*/
+ app.use(function (req, res, next) {
+ if (req.accepts('html'))
+ res.sendFile(__dirname + '/public/index.html');
+ else
+ next();
+ });
+ */
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -15,49 +15,47 @@
     <!-- Payment Schedule -->
     <link rel="stylesheet" href="stylesheets/PaymentSchedule.css">
 </head>
-<body ng-app="PaymentSchedule" ng-cloak>
+<body ng-app="PaymentSchedule" ng-controller="NavigationController" ng-cloak layout="column">
 
-<div ng-controller="NavigationController">
-    <md-toolbar layout="row">
-        <md-button class="menu" hide-gt-md ng-click="toggleSideNav()" aria-label="Show Side Nav">
-            <md-icon md-font-library="material-icons">menu</md-icon>
-        </md-button>
-        <h3 ng-class="">Payment Schedule</h3>
-    </md-toolbar>
+<md-toolbar layout="row">
+    <md-button class="menu" hide-gt-md ng-click="toggleSideNav()" aria-label="Show Side Nav">
+        <md-icon md-font-library="material-icons">menu</md-icon>
+    </md-button>
+    <h3>Payment Schedule</h3>
+</md-toolbar>
 
-    <div class="container" layout="row" flex>
-        <md-sidenav
-                ng-click="toggleSideNav()"
-                md-component-id="sidenav"
-                md-is-locked-open="$mdMedia('gt-md')"
-                class="md-sidenav-left"
-                md-whiteframe="4">
-            <md-list>
-                <md-list-item>
-                    <md-button ng-href="#!/">
-                        <md-icon md-font-library="material-icons">home</md-icon>
-                        Inicio
-                    </md-button>
-                </md-list-item>
-                <md-list-item>
-                    <md-button ng-href="#!/calendar">
-                        <md-icon md-font-library="material-icons">today</md-icon>
-                        Calendario
-                    </md-button>
-                </md-list-item>
-                <md-list-item>
-                    <md-button ng-href="#!/payment">
-                        <md-icon md-font-library="material-icons">attach_money</md-icon>
-                        Pagos
-                    </md-button>
-                </md-list-item>
-            </md-list>
-        </md-sidenav>
+<div class="container" layout="row" flex>
+    <md-sidenav
+            ng-click="toggleSideNav()"
+            md-component-id="sidenav"
+            md-is-locked-open="$mdMedia('gt-md')"
+            class="md-sidenav-left"
+            md-whiteframe="4">
+        <md-list>
+            <md-list-item>
+                <md-button ng-href="#!/">
+                    <md-icon md-font-library="material-icons">home</md-icon>
+                    Inicio
+                </md-button>
+            </md-list-item>
+            <md-list-item>
+                <md-button ng-href="#!/calendar">
+                    <md-icon md-font-library="material-icons">today</md-icon>
+                    Calendario
+                </md-button>
+            </md-list-item>
+            <md-list-item>
+                <md-button ng-href="#!/payment">
+                    <md-icon md-font-library="material-icons">attach_money</md-icon>
+                    Pagos
+                </md-button>
+            </md-list-item>
+        </md-list>
+    </md-sidenav>
 
-        <md-content flex id="content">
-            <div ng-view></div>
-        </md-content>
-    </div>
+    <md-content flex>
+        <div ng-view></div>
+    </md-content>
 </div>
 
 <!-- AngularJS -->
