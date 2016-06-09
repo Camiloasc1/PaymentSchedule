@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es-CO">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Payment Schedule</title>
+    <title>Calendario de Pagos</title>
 
     <base href="/">
 
@@ -18,10 +18,10 @@
 <body ng-app="PaymentSchedule" ng-controller="NavigationController" ng-cloak layout="column">
 
 <md-toolbar layout="row">
-    <md-button class="menu" hide-gt-md ng-click="toggleSideNav()" aria-label="Show Side Nav">
+    <md-button class="menu" hide-gt-md ng-click="toggleSideNav()">
         <md-icon md-font-library="material-icons">menu</md-icon>
     </md-button>
-    <h3>Payment Schedule</h3>
+    <h3>Calendario de Pagos</h3>
 </md-toolbar>
 
 <div class="container" layout="row" flex>
@@ -34,26 +34,26 @@
         <md-list>
             <md-list-item>
                 <md-button ng-href="#!/">
-                    <md-icon md-font-library="material-icons">home</md-icon>
+                    <i class="material-icons">home</i>
                     Inicio
                 </md-button>
             </md-list-item>
             <md-list-item>
                 <md-button ng-href="#!/calendar">
-                    <md-icon md-font-library="material-icons">today</md-icon>
+                    <i class="material-icons">today</i>
                     Calendario
                 </md-button>
             </md-list-item>
             <md-list-item>
-                <md-button ng-href="#!/payment">
-                    <md-icon md-font-library="material-icons">attach_money</md-icon>
+                <md-button ng-href="#!/payments">
+                    <i class="material-icons">attach_money</i>
                     Pagos
                 </md-button>
             </md-list-item>
         </md-list>
     </md-sidenav>
 
-    <md-content flex>
+    <md-content flex infinite-scroll="infiniteScroll()">
         <div ng-view></div>
     </md-content>
 </div>
@@ -63,6 +63,8 @@
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-animate.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-aria.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-route.min.js"></script>
+<!-- AngularJS i18n es-CO -->
+<script src="https://code.angularjs.org/1.5.6/i18n/angular-locale_es-co.js"></script>
 <!-- Angular Material -->
 <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.7/angular-material.min.js"></script>
 <!-- Payment Schedule -->
