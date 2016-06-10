@@ -32,14 +32,21 @@ app.controller('PaymentController', ['$scope', '$http', function ($scope, $http)
                 $scope.loading = false;
             });
     };
-    $scope.reload = function () {
+    $scope.reload = function (limit) {
         $scope.loading = true;
         $http.get('/payments', {
-            params: {skip: 0, limit: $scope.payments.length}
+            params: {skip: 0, limit: limit ? limit : $scope.payments.length}
         })
             .then(function (response) {
                 $scope.payments = response.data;
                 $scope.loading = false;
+            });
+    };
+    $scope.delete = function (payment) {
+        $scope.payments.splice($scope.payments.indexOf(payment), 1);
+        $http.delete('/payments/' + payment.id)
+            .then(function (response) {
+                $scope.reload($scope.payments.length + 1);
             });
     };
 
