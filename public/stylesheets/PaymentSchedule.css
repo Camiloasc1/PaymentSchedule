@@ -11,3 +11,7 @@ md-list-item > a {
     width: 100%;
     text-align: left !important;
 }
+
+.centered {
+    text-align: center;
+}

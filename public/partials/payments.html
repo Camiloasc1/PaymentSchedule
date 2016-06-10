@@ -1,0 +1,19 @@
+<md-card ng-repeat="payment in payments">
+    <md-card-title>
+        <md-card-title-text>
+            <span class="md-headline">{{payment.name}}</span>
+            <span class="md-subhead">{{payment.date | date:'fullDate'}}</span>
+        </md-card-title-text>
+    </md-card-title>
+    <md-card-content>{{payment.description}}</md-card-content>
+    <md-card-actions layout="row" layout-align="end center">
+        <md-button><i class="material-icons">money_off</i></md-button>
+        <md-button><i class="material-icons">mode_edit</i></md-button>
+        <md-button><i class="material-icons">delete</i></md-button>
+    </md-card-actions>
+</md-card>
+<div class="centered">
+    <md-button ng-click="loadMore()" class="md-raised md-cornered">
+        <i class="material-icons">expand_more</i>
+    </md-button>
+</div>
