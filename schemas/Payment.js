@@ -34,7 +34,7 @@ PaymentSchema.virtual('nextPayment').get(function () {
             nextPayment.setMonth(nextPayment.getMonth() + i * this.recurrence.delta);
             break;
         case 'year':
-            nextPayment.setYear(nextPayment.getYear() + i * this.recurrence.delta);
+            nextPayment.setFullYear(nextPayment.getFullYear() + i * this.recurrence.delta);
             break;
     }
     return nextPayment;

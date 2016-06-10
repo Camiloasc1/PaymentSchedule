@@ -42,6 +42,20 @@ app.controller('PaymentController', ['$scope', '$http', function ($scope, $http)
                 $scope.loading = false;
             });
     };
+    $scope.pay = function (payment) {
+        // Is there next payments?
+        if (!payment.nextPayment)
+            return;
+        // Find the next pending payment
+        var i = payment.paymentsDone.indexOf(false);
+        if (i === -1)
+            return;
+        payment.paymentsDone[i] = true; // Set to paid the next pending payment
+        $http.put('/payments/' + payment.id, payment)
+            .then(function (response) {
+                $scope.payments[$scope.payments.indexOf(payment)] = response.data;
+            });
+    };
     $scope.delete = function (payment) {
         $scope.payments.splice($scope.payments.indexOf(payment), 1);
         $http.delete('/payments/' + payment.id)

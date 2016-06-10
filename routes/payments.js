@@ -34,9 +34,25 @@ router.get('/:id', function (req, res, next) {
 });
 
 router.put('/:id', function (req, res, next) {
-    Payment.findByIdAndUpdate(req.params.id, req.body, function (err, result) {
+    Payment.findById(req.params.id, function (err, result) {
         if (err) return next(err);
-        res.json(result);
+        if (!result) {
+            err = new Error('Not Found');
+            err.status = 404;
+            return next(err);
+        }
+        {
+            result.name = req.body.name;
+            result.description = req.body.description;
+            result.date = req.body.date;
+            result.recurrence = req.body.recurrence;
+            result.limit = req.body.limit;
+            result.paymentsDone = req.body.paymentsDone;
+        }
+        result.save(function (err, result) {
+            if (err) return next(err);
+            res.json(result)
+        });
     });
 });
 
