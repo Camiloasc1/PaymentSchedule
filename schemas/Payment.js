@@ -1,23 +1,53 @@
 var mongoose = require('mongoose');
 
+/**
+ * Schema for a Payment.
+ */
 var PaymentSchema = new mongoose.Schema({
+    /**
+     * The name of the payment.
+     */
     name: {type: String, required: true, index: true},
+    /**
+     * The description of the payment.
+     */
     description: {type: String, required: true},
-    date: {type: Date, required: true, set: clearTime}, // First time to pay (or the only one if no recurrence)
+    /**
+     * The first time to pay (or the only one if no recurrence)
+     */
+    date: {type: Date, required: true, set: clearTime},
+    /**
+     * Which type of recurrence to apply.
+     */
     recurrence: {
         type: {
+            /**
+             * How much periods between recurrences.
+             */
             delta: {type: Number, min: 1, required: true},
+            /**
+             * Repeat every delta days, weeks, months or years.
+             */
             period: {type: String, enum: ['day', 'week', 'month', 'year'], lowercase: true, required: true}
         },
         required: true
-    },// Recurrence type with a period (1 day, 2 weeks, etc...)
-    limit: {type: Number, min: 1, required: true}, // Size of paymentsDone, maximum amount of recurrences.
-    paymentsDone: {type: [Boolean]} // Paid status of the recurrences.
+    },
+    /**
+     * How many times to repeat this payment
+     */
+    limit: {type: Number, min: 1, required: true},
+    /**
+     * Paid status of the recurrences.
+     */
+    paymentsDone: {type: [Boolean]}
 }, {
     toObject: {virtuals: true},
     toJSON: {virtuals: true}
 });
 
+/**
+ * Find the next pending payment
+ */
 PaymentSchema.virtual('nextPayment').get(function () {
     var i = this.paymentsDone.indexOf(false);
     if (i === -1)
@@ -40,14 +70,22 @@ PaymentSchema.virtual('nextPayment').get(function () {
     return nextPayment;
 });
 
+/**
+ * Initialize paymentsDone
+ */
 PaymentSchema.methods.initPayments = function () {
     for (var i = 0; i < this.limit; i++) {
         this.paymentsDone[i] = false;
     }
 };
 
-function clearTime(date) {
-    date = new Date(date);
+/**
+ * Sets time to midnight and preserve only the date
+ * @param {string} dateString
+ * @returns {string}
+ */
+function clearTime(dateString) {
+    var date = new Date(dateString);
     date.setUTCHours(0, 0, 0, 0);
     return date.toISOString();
 }

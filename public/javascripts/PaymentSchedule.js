@@ -2,9 +2,15 @@
 var app = angular.module('PaymentSchedule', ['ngRoute', 'ngMaterial']);
 
 app.controller('NavigationController', ['$scope', '$mdSidenav', function ($scope, $mdSidenav) {
+    /**
+     * Show or hide the sidenav
+     */
     $scope.toggleSideNav = function () {
         $mdSidenav('sidenav').toggle();
     };
+    /**
+     * Trigger an 'infiniteScroll' event
+     */
     $scope.infiniteScroll = function () {
         $scope.$broadcast('infiniteScroll');
     };
@@ -14,14 +20,28 @@ app.controller('HomeController', ['$scope', function ($scope) {
 }]);
 
 app.controller('CalendarController', ['$scope', function ($scope) {
-
 }]);
 
-app.controller('PaymentController', ['$scope', '$http', function ($scope, $http) {
+app.controller('PaymentsController', ['$scope', '$http', function ($scope, $http) {
+    /**
+     * How many payments to load at time.
+     * @type {number}
+     */
     $scope.chunk = 5;
+    /**
+     * The payments.
+     * @type {Array}
+     */
     $scope.payments = [];
+    /**
+     * Is the content loading?
+     * @type {boolean}
+     */
     $scope.loading = false;
 
+    /**
+     * Load more payments.
+     */
     $scope.loadMore = function () {
         $scope.loading = true;
         $http.get('/payments', {
@@ -32,6 +52,10 @@ app.controller('PaymentController', ['$scope', '$http', function ($scope, $http)
                 $scope.loading = false;
             });
     };
+    /**
+     * Reload all payments shown.
+     * @param {number} [limit=$scope.payments.length] How may payments to reload
+     */
     $scope.reload = function (limit) {
         $scope.loading = true;
         $http.get('/payments', {
@@ -42,6 +66,10 @@ app.controller('PaymentController', ['$scope', '$http', function ($scope, $http)
                 $scope.loading = false;
             });
     };
+    /**
+     * Set to paid the next pending payment.
+     * @param {object} payment
+     */
     $scope.pay = function (payment) {
         // Is there next payments?
         if (!payment.nextPayment)
@@ -51,11 +79,16 @@ app.controller('PaymentController', ['$scope', '$http', function ($scope, $http)
         if (i === -1)
             return;
         payment.paymentsDone[i] = true; // Set to paid the next pending payment
+        // Push update
         $http.put('/payments/' + payment.id, payment)
             .then(function (response) {
                 $scope.payments[$scope.payments.indexOf(payment)] = response.data;
             });
     };
+    /**
+     * Delete the payment.
+     * @param {object} payment
+     */
     $scope.delete = function (payment) {
         $scope.payments.splice($scope.payments.indexOf(payment), 1);
         $http.delete('/payments/' + payment.id)
@@ -64,6 +97,9 @@ app.controller('PaymentController', ['$scope', '$http', function ($scope, $http)
             });
     };
 
+    /**
+     * Load more content on 'infiniteScroll' event
+     */
     $scope.$on('infiniteScroll', function (event) {
         $scope.loadMore();
     });
@@ -97,7 +133,7 @@ app.config(['$locationProvider', '$routeProvider', function ($locationProvider, 
         })
         .when('/payments', {
             templateUrl: 'partials/payments.html',
-            controller: 'PaymentController'
+            controller: 'PaymentsController'
         })
         .otherwise({redirectTo: '/'});
 
