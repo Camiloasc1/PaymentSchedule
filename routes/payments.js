@@ -6,9 +6,9 @@ var Payment = require('../schemas/Payment.js');
 
 router.get('/', function (req, res, next) {
     var query = Payment.find();
-    if (req.query.skip && Number(req.query.skip) >= 0)
+    if (req.query.skip)
         query.skip(Number(req.query.skip));
-    if (req.query.limit && Number(req.query.limit) >= 0)
+    if (req.query.limit)
         query.limit(Number(req.query.limit));
     query.exec(function (err, result) {
             if (err) return next(err);
@@ -18,10 +18,12 @@ router.get('/', function (req, res, next) {
 });
 
 router.post('/', function (req, res, next) {
-    Payment.create(req.body, function (err, result) {
+    var payment = new Payment(req.body);
+    payment.initPayments();
+    payment.save(function (err, result) {
         if (err) return next(err);
         res.json(result)
-    })
+    });
 });
 
 router.get('/:id', function (req, res, next) {
