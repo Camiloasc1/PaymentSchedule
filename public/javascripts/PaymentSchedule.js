@@ -22,7 +22,7 @@ app.controller('HomeController', ['$scope', function ($scope) {
 app.controller('CalendarController', ['$scope', function ($scope) {
 }]);
 
-app.controller('PaymentsController', ['$scope', '$http', function ($scope, $http) {
+app.controller('PaymentsController', ['$scope', '$http', '$mdDialog', function ($scope, $http, $mdDialog) {
     /**
      * How many payments to load at time.
      * @type {number}
@@ -84,6 +84,22 @@ app.controller('PaymentsController', ['$scope', '$http', function ($scope, $http
             .then(function (response) {
                 $scope.payments[$scope.payments.indexOf(payment)] = response.data;
             });
+    };
+    /**
+     * Confirm if delete a payment.
+     * @param {object} payment
+     */
+    $scope.deletePrompt = function (payment) {
+        var dialog = $mdDialog.confirm()
+            .title('¿Borrar pago?')
+            .textContent('¿Estas seguro de que quieres borrar este pago?.')
+            .ok('Borrar')
+            .cancel('Cancelar');
+        $mdDialog.show(dialog).then(function () {
+            $scope.delete(payment);
+        }, function () {
+            //Do nothing on cancel.
+        });
     };
     /**
      * Delete the payment.
