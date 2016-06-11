@@ -71,18 +71,58 @@ app.controller('PaymentsController', ['$scope', '$http', '$mdDialog', function (
      * @param {object} payment
      */
     $scope.pay = function (payment) {
-        // Is there next payments?
+        // Are there next payments?
         if (!payment.nextPayment)
             return;
         // Find the next pending payment
-        var i = payment.paymentsDone.indexOf(false);
-        if (i === -1)
+        var index = payment.paymentsDone.indexOf(false);
+        if (index === -1)
             return;
-        payment.paymentsDone[i] = true; // Set to paid the next pending payment
-        // Push update
+        payment.paymentsDone[index] = true; // Set to paid the next pending payment
+        $scope.update(payment);
+    };
+    /**
+     * Open a dialog for edit a payment.
+     * @param {object} payment
+     */
+    $scope.edit = function (payment) {
+        var dialog = {
+            controller: function ($scope, $mdDialog) {
+                $scope.cancel = $mdDialog.cancel;
+                $scope.hide = $mdDialog.hide;
+                $scope.payment = payment;
+
+                // Parse values to correct types
+                $scope.payment.date = new Date($scope.payment.date);
+                $scope.payment.recurrence.delta = Number($scope.payment.recurrence.delta);
+
+                $scope.periods = [
+                    {value: 'day', name: 'Dia'},
+                    {value: 'week', name: 'Semana'},
+                    {value: 'month', name: 'Mes'},
+                    {value: 'year', name: 'Año'}
+                ];
+            },
+            templateUrl: 'partials/paymentDialog.html',
+            clickOutsideToClose: true
+        };
+        $mdDialog.show(dialog)
+            .then(function () {
+                $scope.update(payment);
+            }, function () {
+                $scope.reload();
+            });
+    };
+    /**
+     * Update a payment
+     * @param {object} payment
+     */
+    $scope.update = function (payment) {
         $http.put('/payments/' + payment.id, payment)
             .then(function (response) {
-                $scope.payments[$scope.payments.indexOf(payment)] = response.data;
+                var index = $scope.payments.indexOf(payment);
+                if (index !== -1)
+                    $scope.payments[index] = response.data;
             });
     };
     /**
@@ -93,16 +133,18 @@ app.controller('PaymentsController', ['$scope', '$http', '$mdDialog', function (
         var dialog = $mdDialog.confirm()
             .title('¿Borrar pago?')
             .textContent('¿Estas seguro de que quieres borrar este pago?.')
+            .clickOutsideToClose(true)
             .ok('Borrar')
             .cancel('Cancelar');
-        $mdDialog.show(dialog).then(function () {
-            $scope.delete(payment);
-        }, function () {
-            //Do nothing on cancel.
-        });
+        $mdDialog.show(dialog)
+            .then(function () {
+                $scope.delete(payment);
+            }, function () {
+                //Do nothing on cancel.
+            });
     };
     /**
-     * Delete the payment.
+     * Delete a payment.
      * @param {object} payment
      */
     $scope.delete = function (payment) {
@@ -121,6 +163,16 @@ app.controller('PaymentsController', ['$scope', '$http', '$mdDialog', function (
     });
 
     $scope.loadMore();
+}]);
+
+app.controller('PaymentDialogController', ['$scope', '$mdDialog', function ($scope, $mdDialog, payment) {
+    $scope.cancel = $mdDialog.cancel;
+    $scope.hide = $mdDialog.hide;
+    console.log($scope);
+    console.log($scope.payment);
+    console.log($mdDialog);
+    console.log(payment);
+    $scope.payment = payment;
 }]);
 
 app.directive('infiniteScroll', function () {
