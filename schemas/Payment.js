@@ -28,14 +28,14 @@ var PaymentSchema = new mongoose.Schema({
             /**
              * Repeat every delta days, weeks, months or years.
              */
-            period: {type: String, enum: ['day', 'week', 'month', 'year'], lowercase: true, required: true}
+            period: {type: String, enum: ['day', 'week', 'month', 'year'], lowercase: true, required: true},
+            /**
+             * How many times to repeat this payment
+             */
+            limit: {type: Number, min: 1, required: true}
         },
         required: true
     },
-    /**
-     * How many times to repeat this payment
-     */
-    limit: {type: Number, min: 1, required: true},
     /**
      * Paid status of the recurrences.
      */
@@ -74,9 +74,12 @@ PaymentSchema.virtual('nextPayment').get(function () {
  * Initialize paymentsDone
  */
 PaymentSchema.methods.initPayments = function () {
-    for (var i = 0; i < this.limit; i++) {
-        this.paymentsDone[i] = false;
-    }
+    if (this.paymentsDone.length > this.recurrence.limit)
+        this.paymentsDone = this.paymentsDone.slice(0, this.recurrence.limit);
+    if (this.paymentsDone.length < this.recurrence.limit)
+        for (var i = this.paymentsDone.length; i < this.recurrence.limit; i++) {
+            this.paymentsDone[i] = false;
+        }
 };
 
 module.exports = mongoose.model('Payment', PaymentSchema);

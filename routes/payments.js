@@ -46,8 +46,8 @@ router.put('/:id', function (req, res, next) {
             result.description = req.body.description;
             result.date = req.body.date;
             result.recurrence = req.body.recurrence;
-            result.limit = req.body.limit;
             result.paymentsDone = req.body.paymentsDone;
+            result.initPayments();
         }
         result.save(function (err, result) {
             if (err) return next(err);
