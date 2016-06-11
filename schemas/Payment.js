@@ -15,7 +15,7 @@ var PaymentSchema = new mongoose.Schema({
     /**
      * The first time to pay (or the only one if no recurrence)
      */
-    date: {type: Date, required: true, set: clearTime},
+    date: {type: Date, required: true},
     /**
      * Which type of recurrence to apply.
      */
@@ -78,16 +78,5 @@ PaymentSchema.methods.initPayments = function () {
         this.paymentsDone[i] = false;
     }
 };
-
-/**
- * Sets time to midnight and preserve only the date
- * @param {string} dateString
- * @returns {string}
- */
-function clearTime(dateString) {
-    var date = new Date(dateString);
-    date.setUTCHours(0, 0, 0, 0);
-    return date.toISOString();
-}
 
 module.exports = mongoose.model('Payment', PaymentSchema);
