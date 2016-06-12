@@ -11,7 +11,11 @@ var PaymentSchema = new mongoose.Schema({
     /**
      * The description of the payment.
      */
-    description: {type: String, required: true},
+    description: {type: String},
+    /**
+     * Tags for this payment.
+     */
+    tags: {type: [String]},
     /**
      * The first time to pay (or the only one if no recurrence)
      */
@@ -37,19 +41,24 @@ var PaymentSchema = new mongoose.Schema({
         required: true
     },
     /**
-     * Paid status of the recurrences.
+     * Payment recurrences
      */
-    paymentsDone: {type: [Boolean]}
+    payments: {
+        type: {
+            status: {type: [Boolean]}
+        },
+        required: true
+    }
 }, {
     toObject: {virtuals: true},
     toJSON: {virtuals: true}
 });
 
 /**
- * Find the next pending payment
+ * The next pending payment
  */
-PaymentSchema.virtual('nextPayment').get(function () {
-    var i = this.paymentsDone.indexOf(false);
+PaymentSchema.virtual('payments.next').get(function () {
+    var i = this.payments.status.indexOf(false);
     if (i === -1)
         return null;
     var nextPayment = this.date;
@@ -71,14 +80,20 @@ PaymentSchema.virtual('nextPayment').get(function () {
 });
 
 /**
- * Initialize paymentsDone
+ * Initialize payments
  */
-PaymentSchema.methods.initPayments = function () {
-    if (this.paymentsDone.length > this.recurrence.limit)
-        this.paymentsDone = this.paymentsDone.slice(0, this.recurrence.limit);
-    if (this.paymentsDone.length < this.recurrence.limit)
-        for (var i = this.paymentsDone.length; i < this.recurrence.limit; i++) {
-            this.paymentsDone[i] = false;
+PaymentSchema.methods.initPayment = function () {
+    if (!this.tags)
+        this.tags = [];
+    if (!this.payments)
+        this.payments = {};
+    if (!this.payments.status)
+        this.payments.status = [];
+    if (this.payments.status.length > this.recurrence.limit)
+        this.payments.status = this.payments.status.slice(0, this.recurrence.limit);
+    if (this.payments.status.length < this.recurrence.limit)
+        for (var i = this.payments.status.length; i < this.recurrence.limit; i++) {
+            this.payments.status[i] = false;
         }
 };
 

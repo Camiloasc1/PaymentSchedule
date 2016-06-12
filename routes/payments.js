@@ -19,7 +19,7 @@ router.get('/', function (req, res, next) {
 
 router.post('/', function (req, res, next) {
     var payment = new Payment(req.body);
-    payment.initPayments();
+    payment.initPayment();
     payment.save(function (err, result) {
         if (err) return next(err);
         res.json(result)
@@ -46,8 +46,8 @@ router.put('/:id', function (req, res, next) {
             result.description = req.body.description;
             result.date = req.body.date;
             result.recurrence = req.body.recurrence;
-            result.paymentsDone = req.body.paymentsDone;
-            result.initPayments();
+            result.payments = req.body.payments;
+            result.initPayment();
         }
         result.save(function (err, result) {
             if (err) return next(err);

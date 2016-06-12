@@ -72,13 +72,13 @@ app.controller('PaymentsController', ['$scope', '$http', '$mdDialog', function (
      */
     $scope.pay = function (payment) {
         // Are there next payments?
-        if (!payment.nextPayment)
+        if (!payment.payments.next)
             return;
         // Find the next pending payment
-        var index = payment.paymentsDone.indexOf(false);
+        var index = payment.payments.status.indexOf(false);
         if (index === -1)
             return;
-        payment.paymentsDone[index] = true; // Set to paid the next pending payment
+        payment.payments.status[index] = true; // Set to paid the next pending payment
         $scope.update(payment);
     };
     /**
