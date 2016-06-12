@@ -5,6 +5,9 @@
             <label>Buscar</label>
             <input ng-model="query" md-select-on-focus>
         </md-input-container>
+        <md-button ng-click="add()">
+            <i class="material-icons">note_add</i>
+        </md-button>
     </div>
     <md-progress-linear ng-show="loading" md-mode="indeterminate"></md-progress-linear>
 </form>

@@ -48,6 +48,8 @@ app.controller('PaymentsController', ['$scope', '$http', '$mdDialog', function (
      * Load more payments.
      */
     $scope.loadMore = function () {
+        if ($scope.loading)
+            return;
         $scope.loading = true;
         $http.get('/payments', {
             params: {skip: $scope.payments.length, limit: $scope.chunk}
@@ -62,6 +64,8 @@ app.controller('PaymentsController', ['$scope', '$http', '$mdDialog', function (
      * @param {number} [limit=$scope.payments.length] How may payments to reload
      */
     $scope.reload = function (limit) {
+        if ($scope.loading)
+            return;
         $scope.loading = true;
         $http.get('/payments', {
             params: {skip: 0, limit: limit ? limit : $scope.payments.length}
@@ -75,7 +79,8 @@ app.controller('PaymentsController', ['$scope', '$http', '$mdDialog', function (
      * Search payments
      */
     $scope.search = function () {
-        $scope.payments = [];
+        if ($scope.loading)
+            return;
         $scope.loading = true;
         $http.get('payments/search', {
             params: {query: $scope.query}
@@ -99,6 +104,22 @@ app.controller('PaymentsController', ['$scope', '$http', '$mdDialog', function (
             return;
         payment.payments.status[index] = true; // Set to paid the next pending payment
         $scope.update(payment);
+    };
+    /**
+     * Add a new payment and switch to edit mode.
+     */
+    $scope.add = function () {
+        var payment = {
+            name: "Nuevo Pago",
+            date: new Date(),
+            recurrence: {"period": "day", "delta": "1", "limit": 1}
+        };
+        $http.post('/payments', payment)
+            .then(function (response) {
+                payment = response.data;
+                $scope.payments.push(payment);
+                $scope.edit(payment);
+            });
     };
     /**
      * Open a dialog for edit a payment.
@@ -179,10 +200,8 @@ app.controller('PaymentsController', ['$scope', '$http', '$mdDialog', function (
      */
     $scope.$watch('query', function () {
         if ($scope.query.length === 0) {
-            if (!$scope.loading) {
-                $scope.payments = [];
-                $scope.loadMore();
-            }
+            $scope.payments = [];
+            $scope.loadMore();
         } else {
             $scope.search();
         }
