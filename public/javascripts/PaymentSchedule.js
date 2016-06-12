@@ -130,6 +130,9 @@ app.controller('PaymentsController', ['$scope', '$http', '$mdDialog', function (
      * @param {object} payment
      */
     $scope.edit = function (payment) {
+        var index = $scope.payments.indexOf(payment);
+        // Use a copy of the original.
+        payment = jQuery.extend(true, {}, payment);
         var dialog = {
             controller: function ($scope, $mdDialog) {
                 $scope.cancel = $mdDialog.cancel;
@@ -152,9 +155,10 @@ app.controller('PaymentsController', ['$scope', '$http', '$mdDialog', function (
         };
         $mdDialog.show(dialog)
             .then(function () {
+                $scope.payments[index] = payment;
                 $scope.update(payment);
             }, function () {
-                $scope.reload();
+                // Do nothing on cancel.
             });
     };
     /**
@@ -184,7 +188,7 @@ app.controller('PaymentsController', ['$scope', '$http', '$mdDialog', function (
             .then(function () {
                 $scope.delete(payment);
             }, function () {
-                //Do nothing on cancel.
+                // Do nothing on cancel.
             });
     };
     /**
