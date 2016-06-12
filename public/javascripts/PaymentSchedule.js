@@ -38,6 +38,11 @@ app.controller('PaymentsController', ['$scope', '$http', '$mdDialog', function (
      * @type {boolean}
      */
     $scope.loading = false;
+    /**
+     * The current search query.
+     * @type {string}
+     */
+    $scope.query = "";
 
     /**
      * Load more payments.
@@ -60,6 +65,20 @@ app.controller('PaymentsController', ['$scope', '$http', '$mdDialog', function (
         $scope.loading = true;
         $http.get('/payments', {
             params: {skip: 0, limit: limit ? limit : $scope.payments.length}
+        })
+            .then(function (response) {
+                $scope.payments = response.data;
+                $scope.loading = false;
+            });
+    };
+    /**
+     * Search payments
+     */
+    $scope.search = function () {
+        $scope.payments = [];
+        $scope.loading = true;
+        $http.get('payments/search', {
+            params: {query: $scope.query}
         })
             .then(function (response) {
                 $scope.payments = response.data;
@@ -154,6 +173,20 @@ app.controller('PaymentsController', ['$scope', '$http', '$mdDialog', function (
                 $scope.reload($scope.payments.length + 1);
             });
     };
+
+    /**
+     * Watch for a search query
+     */
+    $scope.$watch('query', function () {
+        if ($scope.query.length === 0) {
+            if (!$scope.loading) {
+                $scope.payments = [];
+                $scope.loadMore();
+            }
+        } else {
+            $scope.search();
+        }
+    });
 
     /**
      * Load more content on 'infiniteScroll' event

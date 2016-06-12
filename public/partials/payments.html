@@ -1,8 +1,19 @@
+<form name="searchForm">
+    <div layout="row">
+        <md-input-container flex>
+            <md-icon><i class="material-icons">search</i></md-icon>
+            <label>Buscar</label>
+            <input ng-model="query" md-select-on-focus>
+        </md-input-container>
+    </div>
+    <md-progress-linear ng-show="loading" md-mode="indeterminate"></md-progress-linear>
+</form>
+
 <md-card ng-repeat="payment in payments">
     <md-card-title>
         <md-card-title-text>
             <span class="md-headline">{{payment.name}}</span>
-            <span class="md-subhead">{{payment.nextPayment | date:'fullDate'}}</span>
+            <span class="md-subhead">Proximo Pago: {{payment.payments.next | date:'fullDate'}}</span>
         </md-card-title-text>
     </md-card-title>
     <md-card-content>{{payment.description}}</md-card-content>

@@ -26,6 +26,17 @@ router.post('/', function (req, res, next) {
     });
 });
 
+router.get('/search', function (req, res, next) {
+    var query = Payment.find();
+    if (req.query.query)
+        query.where('name', new RegExp(req.query.query, 'i'));
+    query.exec(function (err, result) {
+            if (err) return next(err);
+            res.json(result);
+        }
+    );
+});
+
 router.get('/:id', function (req, res, next) {
     Payment.findById(req.params.id, function (err, result) {
         if (err) return next(err);
