@@ -57,8 +57,6 @@ app.controller('PaymentsController', ['$scope', '$http', '$mdDialog', function (
      * Load more payments.
      */
     $scope.loadMore = function () {
-        if ($scope.loading)
-            return;
         $scope.loading = true;
         $http.get('/payments', {
             params: {skip: $scope.payments.length, limit: $scope.chunk}
@@ -73,8 +71,6 @@ app.controller('PaymentsController', ['$scope', '$http', '$mdDialog', function (
      * @param {number} [limit=$scope.payments.length] How may payments to reload
      */
     $scope.reload = function (limit) {
-        if ($scope.loading)
-            return;
         $scope.loading = true;
         $http.get('/payments', {
             params: {skip: 0, limit: limit ? limit : $scope.payments.length}
@@ -88,8 +84,6 @@ app.controller('PaymentsController', ['$scope', '$http', '$mdDialog', function (
      * Search payments
      */
     $scope.search = function () {
-        if ($scope.loading)
-            return;
         $scope.loading = true;
         $http.get('payments/search', {
             params: {query: $scope.query}
@@ -104,14 +98,15 @@ app.controller('PaymentsController', ['$scope', '$http', '$mdDialog', function (
      * @param {object} payment
      */
     $scope.pay = function (payment) {
-        // Are there next payments?
+        //Are there next payments?
         if (!payment.payments.next)
             return;
-        // Find the next pending payment
+        //Find the next pending payment.
         var index = payment.payments.status.indexOf(false);
         if (index === -1)
             return;
-        payment.payments.status[index] = true; // Set to paid the next pending payment
+        //Set to paid the next pending payment.
+        payment.payments.status[index] = true;
         $scope.update(payment);
     };
     /**
@@ -131,7 +126,7 @@ app.controller('PaymentsController', ['$scope', '$http', '$mdDialog', function (
      */
     $scope.edit = function (payment) {
         var index = $scope.payments.indexOf(payment);
-        // Use a copy of the original.
+        //Use a copy of the original.
         payment = jQuery.extend(true, {}, payment);
         var dialog = {
             controller: function ($scope, $mdDialog) {
@@ -139,7 +134,7 @@ app.controller('PaymentsController', ['$scope', '$http', '$mdDialog', function (
                 $scope.hide = $mdDialog.hide;
                 $scope.payment = payment;
 
-                // Parse values to correct types
+                //Parse values to correct types.
                 $scope.payment.date = new Date($scope.payment.date);
                 $scope.payment.recurrence.delta = Number($scope.payment.recurrence.delta);
 
@@ -158,7 +153,7 @@ app.controller('PaymentsController', ['$scope', '$http', '$mdDialog', function (
                 $scope.payments[index] = payment;
                 $scope.update(payment);
             }, function () {
-                // Do nothing on cancel.
+                //Do nothing on cancel.
             });
     };
     /**
@@ -188,7 +183,7 @@ app.controller('PaymentsController', ['$scope', '$http', '$mdDialog', function (
             .then(function () {
                 $scope.delete(payment);
             }, function () {
-                // Do nothing on cancel.
+                //Do nothing on cancel.
             });
     };
     /**
@@ -208,8 +203,11 @@ app.controller('PaymentsController', ['$scope', '$http', '$mdDialog', function (
      */
     $scope.$watch('query', function () {
         if ($scope.query.length === 0) {
-            $scope.payments = [];
-            $scope.loadMore();
+            //Do not load twice.
+            if (!$scope.loading) {
+                $scope.payments = [];
+                $scope.loadMore();
+            }
         } else {
             $scope.search();
         }

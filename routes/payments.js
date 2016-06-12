@@ -28,8 +28,12 @@ router.post('/', function (req, res, next) {
 
 router.get('/search', function (req, res, next) {
     var query = Payment.find();
-    if (req.query.query)
-        query.where('name', new RegExp(req.query.query, 'i'));
+    if (req.query.query) {
+        var regex = new RegExp(req.query.query, 'i');
+        query.or([{name: {$regex: regex}}, {tags: {$regex: regex}}]);
+        //query.where('name').regex(regex);
+        //query.where('tags').regex(regex);
+    }
     query.exec(function (err, result) {
             if (err) return next(err);
             res.json(result);
