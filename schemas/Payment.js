@@ -15,7 +15,7 @@ var PaymentSchema = new mongoose.Schema({
     /**
      * Tags for this payment.
      */
-    tags: {type: [String]},
+    tags: {type: [String], index: true},
     /**
      * The first time to pay (or the only one if no recurrence)
      */
