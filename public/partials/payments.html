@@ -18,6 +18,7 @@
             <span class="md-headline">{{payment.name}}</span>
             <span class="md-subhead">Proximo Pago: {{payment.payments.next | date:'fullDate'}}</span>
         </md-card-title-text>
+        <md-chips ng-model="payment.tags" readonly="true"></md-chips>
     </md-card-title>
     <md-card-content>{{payment.description}}</md-card-content>
     <md-card-actions layout="row" layout-align="end center">

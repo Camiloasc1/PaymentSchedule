@@ -55,6 +55,7 @@ router.put('/:id', function (req, res, next) {
         {
             result.name = req.body.name;
             result.description = req.body.description;
+            result.tags = req.body.tags;
             result.date = req.body.date;
             result.recurrence = req.body.recurrence;
             result.payments = req.body.payments;
