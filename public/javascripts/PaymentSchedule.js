@@ -43,6 +43,15 @@ app.controller('PaymentsController', ['$scope', '$http', '$mdDialog', function (
      * @type {string}
      */
     $scope.query = "";
+    /**
+     * Layout for a new payment.
+     * @type {object}
+     */
+    $scope.layout = {
+        name: "Nuevo Pago",
+        date: new Date(),
+        recurrence: {"period": "day", "delta": "1", "limit": 1}
+    };
 
     /**
      * Load more payments.
@@ -109,14 +118,9 @@ app.controller('PaymentsController', ['$scope', '$http', '$mdDialog', function (
      * Add a new payment and switch to edit mode.
      */
     $scope.add = function () {
-        var payment = {
-            name: "Nuevo Pago",
-            date: new Date(),
-            recurrence: {"period": "day", "delta": "1", "limit": 1}
-        };
-        $http.post('/payments', payment)
+        $http.post('/payments', $scope.layout)
             .then(function (response) {
-                payment = response.data;
+                var payment = response.data;
                 $scope.payments.push(payment);
                 $scope.edit(payment);
             });
