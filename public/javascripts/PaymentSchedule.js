@@ -16,7 +16,7 @@ app.controller('NavigationController', ['$scope', '$mdSidenav', function ($scope
     };
 }]);
 
-app.controller('HomeController', ['$scope', '$http', function ($scope, $http) {
+app.controller('HomeController', ['$scope', '$http', '$interval', function ($scope, $http, $interval) {
     /**
      * The payments.
      * @type {Array}
@@ -27,6 +27,11 @@ app.controller('HomeController', ['$scope', '$http', function ($scope, $http) {
      * @type {boolean}
      */
     $scope.loading = false;
+    /**
+     * State of the animation in switchThemes.
+     * @type {boolean}
+     */
+    $scope.flashTheme = false;
     /**
      * Today at midnight.
      * @type {Date}
@@ -45,7 +50,7 @@ app.controller('HomeController', ['$scope', '$http', function ($scope, $http) {
      */
     $scope.oneWeek = new Date($scope.today);
     $scope.oneWeek.setDate($scope.oneWeek.getDate() + 7);
-    
+
     /**
      * Reload all payments shown.
      */
@@ -56,6 +61,7 @@ app.controller('HomeController', ['$scope', '$http', function ($scope, $http) {
         })
             .then(function (response) {
                 $scope.payments = response.data;
+                $scope.switchThemes();
                 $scope.loading = false;
             });
     };
@@ -92,6 +98,36 @@ app.controller('HomeController', ['$scope', '$http', function ($scope, $http) {
                 //         $scope.payments.splice(index, 1);
             });
     };
+    /**
+     * Change color of payments
+     * Before today: red-orange
+     * Today: indigo
+     * Tomorrow: cyan
+     * After tomorrow: none
+     */
+    $scope.switchThemes = function () {
+        var payment;
+        $scope.flashTheme = !$scope.flashTheme;
+        for (var i = 0; i < $scope.payments.length; i++) {
+            payment = $scope.payments[i];
+            if (typeof payment.date === 'string')
+                payment.date = new Date(payment.date);
+            if (payment.date < $scope.today)
+                payment.theme = $scope.flashTheme ? 'red' : 'orange';
+            // Check equals require to compare the time value, not the objects itself. Like comparing floats.
+            if (payment.date.getTime() === $scope.today.getTime())
+                payment.theme = 'indigo';
+            if (payment.date.getTime() === $scope.tomorrow.getTime())
+                payment.theme = 'cyan';
+            if (payment.date > $scope.tomorrow)
+                payment.theme = '';
+        }
+    };
+
+    /**
+     * Change color of payments
+     */
+    $interval($scope.switchThemes, 1000);
 
     $scope.reload();
 }]);
@@ -326,7 +362,7 @@ app.directive('infiniteScroll', function () {
     }
 });
 
-app.config(['$locationProvider', '$routeProvider', function ($locationProvider, $routeProvider) {
+app.config(['$locationProvider', '$routeProvider', '$mdThemingProvider', function ($locationProvider, $routeProvider, $mdThemingProvider) {
     $routeProvider
         .when('/', {
             templateUrl: 'partials/home.html',
@@ -345,4 +381,9 @@ app.config(['$locationProvider', '$routeProvider', function ($locationProvider, 
     //html5mode causes several issues when the front end is embedded with the web service.
     //$locationProvider.html5Mode(true);
     $locationProvider.hashPrefix('!');
+
+    $mdThemingProvider.theme('orange').backgroundPalette('orange').dark();
+    $mdThemingProvider.theme('red').backgroundPalette('red').dark();
+    $mdThemingProvider.theme('indigo').backgroundPalette('indigo').dark();
+    $mdThemingProvider.theme('cyan').backgroundPalette('cyan').dark();
 }]);

@@ -1,4 +1,4 @@
-<md-card ng-repeat="payment in payments">
+<md-card md-theme="{{payment.theme}}" md-theme-watch ng-repeat="payment in payments">
     <md-card-title>
         <md-card-title-text>
             <span class="md-headline">{{payment.name}}</span>
