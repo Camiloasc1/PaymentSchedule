@@ -40,6 +40,23 @@ router.get('/search', function (req, res, next) {
     );
 });
 
+router.get('/next', function (req, res, next) {
+    var query = Payment.find();
+    query.where('payments.next').ne(null);
+    if (req.query.after) {
+        query.where('payments.next').gte(new Date(req.query.after));
+    }
+    if (req.query.oneWeek) {
+        query.where('payments.next').lte(new Date(req.query.oneWeek));
+    }
+    query.sort({'payments.next': 1});
+    query.exec(function (err, result) {
+            if (err) return next(err);
+            res.json(result);
+        }
+    );
+});
+
 router.get('/:id', function (req, res, next) {
     Payment.findById(req.params.id, function (err, result) {
         if (err) return next(err);

@@ -16,7 +16,84 @@ app.controller('NavigationController', ['$scope', '$mdSidenav', function ($scope
     };
 }]);
 
-app.controller('HomeController', ['$scope', function ($scope) {
+app.controller('HomeController', ['$scope', '$http', function ($scope, $http) {
+    /**
+     * The payments.
+     * @type {Array}
+     */
+    $scope.payments = [];
+    /**
+     * Is the content loading?
+     * @type {boolean}
+     */
+    $scope.loading = false;
+    /**
+     * Today at midnight.
+     * @type {Date}
+     */
+    $scope.today = new Date();
+    $scope.today.setHours(0, 0, 0, 0);
+    /**
+     * Tomorrow.
+     * @type {Date}
+     */
+    $scope.tomorrow = new Date($scope.today);
+    $scope.tomorrow.setDate($scope.tomorrow.getDate() + 1);
+    /**
+     * The next 7 days.
+     * @type {Date}
+     */
+    $scope.oneWeek = new Date($scope.today);
+    $scope.oneWeek.setDate($scope.oneWeek.getDate() + 7);
+    
+    /**
+     * Reload all payments shown.
+     */
+    $scope.reload = function () {
+        $scope.loading = true;
+        $http.get('/payments/next', {
+            params: {before: $scope.oneWeek}
+        })
+            .then(function (response) {
+                $scope.payments = response.data;
+                $scope.loading = false;
+            });
+    };
+    /**
+     * Set to paid the next pending payment.
+     * @param {object} payment
+     */
+    $scope.pay = function (payment) {
+        //Are there next payments?
+        if (!payment.payments.next)
+            return;
+        //Find the next pending payment.
+        var index = payment.payments.status.indexOf(false);
+        if (index === -1)
+            return;
+        //Set to paid the next pending payment.
+        payment.payments.status[index] = true;
+        $scope.update(payment);
+    };
+    /**
+     * Update a payment
+     * @param {object} payment
+     */
+    $scope.update = function (payment) {
+        $http.put('/payments/' + payment.id, payment)
+            .then(function (response) {
+                $scope.reload();
+                // Is easier to reload instead of check the next payment and sort again.
+                // var index = $scope.payments.indexOf(payment);
+                // if (index !== -1)
+                //     if (response.data.payments.next && new Date(response.data.payments.next) < $scope.oneWeek)
+                //         $scope.payments[index] = response.data;
+                //     else
+                //         $scope.payments.splice(index, 1);
+            });
+    };
+
+    $scope.reload();
 }]);
 
 app.controller('CalendarController', ['$scope', function ($scope) {
@@ -252,7 +329,7 @@ app.directive('infiniteScroll', function () {
 app.config(['$locationProvider', '$routeProvider', function ($locationProvider, $routeProvider) {
     $routeProvider
         .when('/', {
-            templateUrl: 'partials/index.html',
+            templateUrl: 'partials/home.html',
             controller: 'HomeController'
         })
         .when('/calendar', {

@@ -128,6 +128,9 @@ PaymentSchema.pre('save', function (next) {
             this.payments.status[i] = false;
         }
     this.payments.next = this.getNextPayment();
+    //Avoid to store the virtual, also may be solved with sub-schemas.
+    if (this.payments.dates)
+        delete this.payments.dates;
     return next();
     //next(Error('Error Message'));
 });
