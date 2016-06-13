@@ -16,7 +16,8 @@
     <md-card-title>
         <md-card-title-text>
             <span class="md-headline">{{payment.name}}</span>
-            <span class="md-subhead" ng-show="payment.payments.next">Proximo Pago: {{payment.payments.next | date:'fullDate'}}</span>
+            <span class="md-subhead" ng-show="payment.payments.next">Proximo Pago: {{payment.payments.next | date:'fullDate'}}.</span>
+            <span class="md-subhead" ng-show="!payment.payments.next">Ciclo de pagos finalizado.</span>
         </md-card-title-text>
         <md-chips ng-model="payment.tags" readonly="true"></md-chips>
     </md-card-title>

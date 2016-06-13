@@ -17,7 +17,7 @@ var PaymentSchema = new mongoose.Schema({
      */
     tags: {type: [String], index: true},
     /**
-     * The first time to pay (or the only one if no recurrence)
+     * The first time to pay (or the only one if no recurrence).
      */
     date: {type: Date, required: true},
     /**
@@ -34,7 +34,7 @@ var PaymentSchema = new mongoose.Schema({
              */
             period: {type: String, enum: ['day', 'week', 'month', 'year'], lowercase: true, required: true},
             /**
-             * How many times to repeat this payment
+             * How many times to repeat this payment.
              */
             limit: {type: Number, min: 1, required: true}
         },
@@ -45,7 +45,14 @@ var PaymentSchema = new mongoose.Schema({
      */
     payments: {
         type: {
-            status: {type: [Boolean]}
+            /**
+             * Paid status of the recurrences.
+             */
+            status: {type: [Boolean], required: true},
+            /**
+             * The next pending payment.
+             */
+            next: {type: Date, required: true, index: true}
         },
         required: true
     }
@@ -55,46 +62,74 @@ var PaymentSchema = new mongoose.Schema({
 });
 
 /**
- * The next pending payment
+ * Calculate the pay days.
  */
-PaymentSchema.virtual('payments.next').get(function () {
-    var i = this.payments.status.indexOf(false);
-    if (i === -1)
-        return null;
-    var nextPayment = this.date;
-    switch (this.recurrence.period) {
-        case 'day':
-            nextPayment.setDate(nextPayment.getDate() + i * this.recurrence.delta);
-            break;
-        case 'week':
-            nextPayment.setDate(nextPayment.getDate() + i * this.recurrence.delta * 7);
-            break;
-        case 'month':
-            nextPayment.setMonth(nextPayment.getMonth() + i * this.recurrence.delta);
-            break;
-        case 'year':
-            nextPayment.setFullYear(nextPayment.getFullYear() + i * this.recurrence.delta);
-            break;
+PaymentSchema.virtual('payments.dates').get(function () {
+    var dates = [];
+    for (var i = 0; i < this.recurrence.limit; i++) {
+        dates[i] = this.getPaymentDate(i);
     }
-    return nextPayment;
+    return dates;
 });
 
 /**
- * Initialize payments
+ * Get the next pending payment
+ * @returns {date}
  */
-PaymentSchema.methods.initPayment = function () {
-    if (!this.tags)
-        this.tags = [];
+PaymentSchema.methods.getNextPayment = function () {
+    var index = this.payments.status.indexOf(false);
+    if (index === -1)
+        return null;
+    return this.getPaymentDate(index);
+};
+/**
+ * Get a payment date by index.
+ * @param {number} index
+ * @returns {date}
+ */
+PaymentSchema.methods.getPaymentDate = function (index) {
+    var paymentDate = new Date(this.date.getTime());
+    switch (this.recurrence.period) {
+        case 'day':
+            paymentDate.setDate(paymentDate.getDate() + index * this.recurrence.delta);
+            break;
+        case 'week':
+            paymentDate.setDate(paymentDate.getDate() + index * this.recurrence.delta * 7);
+            break;
+        case 'month':
+            paymentDate.setMonth(paymentDate.getMonth() + index * this.recurrence.delta);
+            break;
+        case 'year':
+            paymentDate.setFullYear(paymentDate.getFullYear() + index * this.recurrence.delta);
+            break;
+    }
+    return paymentDate;
+};
+
+/**
+ * Pre-Validate Middleware.
+ */
+PaymentSchema.pre('validate', function (next) {
     if (!this.payments)
         this.payments = {};
     if (!this.payments.status)
         this.payments.status = [];
+    return next();
+    //next(Error('Error Message'));
+});
+/**
+ * Pre-Save Middleware.
+ */
+PaymentSchema.pre('save', function (next) {
     if (this.payments.status.length > this.recurrence.limit)
         this.payments.status = this.payments.status.slice(0, this.recurrence.limit);
     if (this.payments.status.length < this.recurrence.limit)
         for (var i = this.payments.status.length; i < this.recurrence.limit; i++) {
             this.payments.status[i] = false;
         }
-};
+    this.payments.next = this.getNextPayment();
+    return next();
+    //next(Error('Error Message'));
+});
 
 module.exports = mongoose.model('Payment', PaymentSchema);

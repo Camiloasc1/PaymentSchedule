@@ -52,6 +52,8 @@ app.controller('PaymentsController', ['$scope', '$http', '$mdDialog', function (
         date: new Date(),
         recurrence: {"period": "day", "delta": "1", "limit": 1}
     };
+    //Clear hours.
+    $scope.layout.date.setHours(0, 0, 0, 0);
 
     /**
      * Load more payments.
