@@ -172,6 +172,9 @@ app.controller('PaymentsController', ['$scope', '$http', '$mdDialog', function (
      * Load more payments.
      */
     $scope.loadMore = function () {
+        // Avoid to load the same payments more than once.
+        if ($scope.loading)
+            return;
         $scope.loading = true;
         $http.get('/payments', {
             params: {skip: $scope.payments.length, limit: $scope.chunk}
