@@ -110,16 +110,16 @@ app.controller('HomeController', ['$scope', '$http', '$interval', function ($sco
         $scope.flashTheme = !$scope.flashTheme;
         for (var i = 0; i < $scope.payments.length; i++) {
             payment = $scope.payments[i];
-            if (typeof payment.date === 'string')
-                payment.date = new Date(payment.date);
-            if (payment.date < $scope.today)
+            if (typeof payment.payments.next === 'string')
+                payment.payments.next = new Date(payment.payments.next);
+            if (payment.payments.next < $scope.today)
                 payment.theme = $scope.flashTheme ? 'red' : 'orange';
             // Check equals require to compare the time value, not the objects itself. Like comparing floats.
-            if (payment.date.getTime() === $scope.today.getTime())
+            if (payment.payments.next.getTime() === $scope.today.getTime())
                 payment.theme = 'indigo';
-            if (payment.date.getTime() === $scope.tomorrow.getTime())
+            if (payment.payments.next.getTime() === $scope.tomorrow.getTime())
                 payment.theme = 'cyan';
-            if (payment.date > $scope.tomorrow)
+            if (payment.payments.next > $scope.tomorrow)
                 payment.theme = '';
         }
     };

@@ -46,8 +46,8 @@ router.get('/next', function (req, res, next) {
     if (req.query.after) {
         query.where('payments.next').gte(new Date(req.query.after));
     }
-    if (req.query.oneWeek) {
-        query.where('payments.next').lte(new Date(req.query.oneWeek));
+    if (req.query.before) {
+        query.where('payments.next').lte(new Date(req.query.before));
     }
     query.sort({'payments.next': 1});
     query.exec(function (err, result) {
